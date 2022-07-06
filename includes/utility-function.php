@@ -17,8 +17,15 @@ function hybrid_get_path( $filename = '' ) {
 }
 
 function hybrid_include( $filename = '', $attributes='') {
-	$file_path = cameron_get_path($filename);
+	$file_path = hybrid_get_path($filename);
 	if( file_exists($file_path) ) {
 		include_once($file_path);
 	}
+}
+
+function printr($data) {
+	echo '<pre>';
+		print_r($data);
+	echo '</pre>';
+	exit;
 }

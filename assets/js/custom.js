@@ -1,8 +1,6 @@
 (function ($) {
 
-  function init() {
-    $('body').addClass('country-'+userCountryCode);
-  }
+  function init() {}
 
 
   $(document).ready(init);

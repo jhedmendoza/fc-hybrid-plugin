@@ -28,7 +28,7 @@ class Hybrid {
 				$this->define('ENV', 'local');
 			break;
 
-			case 'https://dev-football.hybridanchor.com/m':
+			case 'dev-football.hybridanchor.com':
 				$this->define('ENV', 'staging');
 			break;
 
@@ -50,7 +50,7 @@ class Hybrid {
 		require_once(HYBRID_PATH.'includes/utility-function.php');
 
 		//Include controllers.
-    require_once(HYBRID_PATH.'includes/controllers/Pdf.php');
+    require_once(HYBRID_PATH.'includes/controllers/FCPDF.php');
 
 		//Include core.
 		hybrid_include('includes/hybrid-assets.php');
