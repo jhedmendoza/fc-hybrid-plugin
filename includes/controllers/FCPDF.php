@@ -63,7 +63,7 @@ class FCPDF {
           }
           $data['job_experience'] = $job_experience;
       }
-
+      
 
       if ( isset($_POST['submit_resume']) ) {
          $this->build_pdf($data);
@@ -141,8 +141,14 @@ class FCPDF {
         $mpdf->WriteHTML($job_experience);
       }
 
-      $mpdf->Output();
-      exit;
+      $upload = wp_upload_dir();
+      $upload_dir = $upload['basedir'];
+      $upload_dir = $upload_dir . '/fc_hybrid_plugin';
+
+      if (! is_dir($upload_dir))
+         mkdir( $upload_dir, 0700 );
+
+      $mpdf->Output($upload_dir.'/'.$data['resume_id'].'.pdf','F');
     }
 }
 

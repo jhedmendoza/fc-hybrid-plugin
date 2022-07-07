@@ -21,7 +21,7 @@ class Hybrid {
 	function __construct() {}
 
 	function initialize() {
-
+		
 		switch ($_SERVER['SERVER_NAME']) {
 
 			case 'football-careers.local':
