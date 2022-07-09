@@ -72,74 +72,116 @@ class FCPDF {
 
     public function build_pdf($data) {
 
-      $mpdf = new Mpdf();
-      $html_header.='<table>';
+      $mpdf = new Mpdf([
+        'margin_left'  => 0,
+        'margin_right' => 0,
+        'default_font' => ''
+      ]);
+      $html_header.='<table class="document-header" style="margin-left:40px">';
       $html_header.='<tr>';
-      $html_header .= '<td><img style="width:170px;border:2px solid #000" src="' . $data['candidate_photo'].'"/><td>';
-      $html_header.=  '<td style="vertical-align:top">
-                        <h1 style="font-size:40px;font-family:Helvetica">'.$data['candidate_name'].'</h1><br />
-                        <p><strong>Professional Title: </strong>'.$data['candidate_title'].'</p>
-                        <p><strong>E-mail: </strong>'.$data['candidate_email'].'</p>
-                        <p><strong>Skills: </strong>'.$data['candidate_skills'].'</p>
-                        <p><strong>Location: </strong>'.$data['candidate_location'].'</p>';
+      // $html_header .= '<td><img style="width:170px;border:2px solid #000" src="' . $data['candidate_photo'].'"/><td>';
+      // $html_header.=  '<td style="vertical-align:top">
+      //                   <h1 style="font-size:40px;font-family:Helvetica">'.$data['candidate_name'].'</h1><br />
+      //                   <p><strong>Professional Title: </strong>'.$data['candidate_title'].'</p>
+      //                   <p><strong>E-mail: </strong>'.$data['candidate_email'].'</p>
+      //                   <p><strong>Skills: </strong>'.$data['candidate_skills'].'</p>
+      //                   <p><strong>Location: </strong>'.$data['candidate_location'].'</p>';
 
-                        if ( !empty($data['candidate_video']) )
-                          $html_header.= '<p><strong>Video: </strong>'.$data['candidate_video'].'</p>';
+                        // if ( !empty($data['candidate_video']) )
+                        //   $html_header.= '<p><strong>Video: </strong>'.$data['candidate_video'].'</p>';
 
-                        if ( !empty($data['rate_min']) )
-                          $html_header.= '<p><strong>Minimum rate/h (£): </strong>'.$data['rate_min'].'</p>';
+                        // if ( !empty($data['rate_min']) )
+                        //   $html_header.= '<p><strong>Minimum rate/h (£): </strong>'.$data['rate_min'].'</p>';
 
-                          if ( isset($data['links']) ) {
-                            foreach ($data['links'] as $link) {
-                                $html_header.="<p><strong>".$link['link_name']."</strong>: ".$link['link_url']." </p>";
-                            }
-                          }
-
-      $html_header.= '</td>';
+                          // if ( isset($data['links']) ) {
+                          //   foreach ($data['links'] as $link) {
+                          //       $html_header.="<p><strong>".$link['link_name']."</strong>: ".$link['link_url']." </p>";
+                          //   }
+                          // }
+      $html_header .= '<td width="65%;">
+                        <h1 style="font-size:40px;font-family:Helvetica">'.$data['candidate_name'].'</h1>
+                        <hr style="border: 1px solid #000;" /> 
+                        <p>'.$data['candidate_title'].'</p>
+                      </td>';
+      $html_header .= '<td><img src="'.$data['candidate_photo'].'"/><td>';
       $html_header.='</tr>';
-      $html_header.='</table><hr style="border-top: 4px double #999;" />';
+      $html_header.='</table>';
 
       $mpdf->setAutoTopMargin = 'stretch';
       $mpdf->WriteHTML($html_header);
-      $mpdf->WriteHTML('<p>'.$data['candidate_about'].'</p>');
+                        
+      $html_body.='<div class="content-body">';
 
-      if ( isset($data['education']) )
-      {
+        $html_body.='<div class="left-content">';
+          $html_body.= '<div class="row l-container-header">
 
-        $education.= '<hr />';
-        $education.= '<h2>Qualifications/Accreditation</h2>';
+            <div class="column left">
+              <h4>E-mail</h4>
+              <p>'.$data['candidate_email'].'</p>
+            </div>
 
-        foreach ($data['education'] as $educ) {
-          $education.='<p><strong>School Name: </strong>'.$educ['school_name'].'</p>';
-          $education.='<p><strong>Qualification: </strong>'.$educ['qualification'].'</p>';
-          $education.='<p><strong>Start/End Date: </strong>'.$educ['date'].'</p>';
+            <div class="column middle">
+              <h4>Location</h4>
+              <p>'.$data['candidate_location'].'</p>
+            </div>';
 
-          if ( !empty($educ['notes']) ) {
-            $education.='<p><strong>Notes: </strong>'.$educ['notes'].'</p>';
+            if ( !empty($data['rate_min']) ) {
+              $html_body.='<div class="column right">
+                  <h4>Minimum rate/h (£)</h4>
+                  <p>'.$data['rate_min'].'</p>
+                </div>';
+            }
+
+        $html_body.='</div>';
+
+          $html_body.='<p>'.$data['candidate_about'].'</p>'; 
+
+         $html_body.='</div>';
+
+        $html_body.='<div class="right-content">';
+
+        if ( isset($data['education']) )
+        {
+  
+          $html_body.= '<h2>Qualifications/Accreditation</h2>';
+  
+          foreach ($data['education'] as $educ) {
+            $html_body.='<p><strong>School Name: </strong>'.$educ['school_name'].'</p>';
+            $html_body.='<p><strong>Qualification: </strong>'.$educ['qualification'].'</p>';
+            $html_body.='<p><strong>Start/End Date: </strong>'.$educ['date'].'</p>';
+  
+            if ( !empty($educ['notes']) ) {
+              $html_body.='<p><strong>Notes: </strong>'.$educ['notes'].'</p>';
+            }
+  
           }
-
         }
-        $mpdf->WriteHTML($education);
-      }
-
-      if ( isset($data['job_experience']) )
-      {
-
-        $job_experience.= '<hr />';
-        $job_experience.= '<h2>Career History</h2>';
-
-        foreach ($data['job_experience'] as $job_exp) {
-          $job_experience.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
-          $job_experience.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
-          $job_experience.='<p><strong>Start/End Date: </strong>'.$job_exp['date'].'</p>';
-
-          if ( !empty($educ['notes']) ) {
-            $job_experience.='<p><strong>Notes: </strong>'.$job_exp['notes'].'</p>';
+  
+        if ( isset($data['job_experience']) )
+        {
+          $html_body.= '<h2>Career History</h2>';
+          foreach ($data['job_experience'] as $job_exp) {
+            $html_body.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
+            $html_body.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
+            $html_body.='<p><strong>Start/End Date: </strong>'.$job_exp['date'].'</p>';
+  
+            if ( !empty($educ['notes']) ) {
+              $html_body.='<p><strong>Notes: </strong>'.$job_exp['notes'].'</p>';
+            }
+  
           }
-
         }
-        $mpdf->WriteHTML($job_experience);
-      }
+
+        $html_body.='</div>';
+
+      $html_body.='</div>';
+
+      $styles = file_get_contents(HYBRID_DIR_URL . 'assets/css/pdf-layout.css');
+      $mpdf->WriteHTML($styles, 1);
+      $mpdf->WriteHTML($html_body, 2);
+
+      $mpdf->Output();
+      exit;
 
       $upload = wp_upload_dir();
       $upload_dir = $upload['basedir'];
