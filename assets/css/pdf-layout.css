@@ -1,7 +1,11 @@
-.column {float: left;padding: 10px;}
-.left, .right, .middle {width: 25%;}
+.column {float: left;padding-top: 10px;;padding-left:20px}
+.middle {width:20%}
+.left, .right {width: 30%;}
+
+.right h4 { white-space: nowrap !important;}
   
-.l-container-header {background-color:#000;color:#fff}
+.l-container-header {background-color:#000;color:#fff;margin:0;padding:0}
 .content-body {display: flex;}
 .left-content {float:left;width: 355pt;margin-left:20px}
-.right-content {float:right;background-color:#eeeeef;width:225pt;}
+.right-content {float:right;background-color:#eeeeef;width:225pt;height:100%}
+.candidate-name {font-size:40px;}

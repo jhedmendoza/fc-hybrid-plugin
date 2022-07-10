@@ -75,31 +75,15 @@ class FCPDF {
       $mpdf = new Mpdf([
         'margin_left'  => 0,
         'margin_right' => 0,
-        'default_font' => ''
+        'margin_top'=> 0,
+        'margin_bottom' => 0,
+        'default_font' => 'Arial'
       ]);
       $html_header.='<table class="document-header" style="margin-left:40px">';
       $html_header.='<tr>';
-      // $html_header .= '<td><img style="width:170px;border:2px solid #000" src="' . $data['candidate_photo'].'"/><td>';
-      // $html_header.=  '<td style="vertical-align:top">
-      //                   <h1 style="font-size:40px;font-family:Helvetica">'.$data['candidate_name'].'</h1><br />
-      //                   <p><strong>Professional Title: </strong>'.$data['candidate_title'].'</p>
-      //                   <p><strong>E-mail: </strong>'.$data['candidate_email'].'</p>
-      //                   <p><strong>Skills: </strong>'.$data['candidate_skills'].'</p>
-      //                   <p><strong>Location: </strong>'.$data['candidate_location'].'</p>';
-
-                        // if ( !empty($data['candidate_video']) )
-                        //   $html_header.= '<p><strong>Video: </strong>'.$data['candidate_video'].'</p>';
-
-                        // if ( !empty($data['rate_min']) )
-                        //   $html_header.= '<p><strong>Minimum rate/h (£): </strong>'.$data['rate_min'].'</p>';
-
-                          // if ( isset($data['links']) ) {
-                          //   foreach ($data['links'] as $link) {
-                          //       $html_header.="<p><strong>".$link['link_name']."</strong>: ".$link['link_url']." </p>";
-                          //   }
-                          // }
+      
       $html_header .= '<td width="65%;">
-                        <h1 style="font-size:40px;font-family:Helvetica">'.$data['candidate_name'].'</h1>
+                        <h1 class="candidate-name">'.$data['candidate_name'].'</h1>
                         <hr style="border: 1px solid #000;" /> 
                         <p>'.$data['candidate_title'].'</p>
                       </td>';
@@ -136,6 +120,24 @@ class FCPDF {
 
           $html_body.='<p>'.$data['candidate_about'].'</p>'; 
 
+          if ( isset($data['job_experience']) )
+          {
+            $html_body.='<div style="width:100%">';
+            $html_body.= '<h2>Career History</h2>';
+            foreach ($data['job_experience'] as $job_exp) {
+              $html_body.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
+              $html_body.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
+              $html_body.='<p><strong>Start/End Date: </strong>'.$job_exp['date'].'</p>';
+    
+              if ( !empty($educ['notes']) ) {
+                $html_body.='<p><strong>Notes: </strong>'.$job_exp['notes'].'</p>';
+              }
+    
+            }
+
+            $html_body.='</div>';
+          }
+
          $html_body.='</div>';
 
         $html_body.='<div class="right-content">';
@@ -143,7 +145,7 @@ class FCPDF {
         if ( isset($data['education']) )
         {
   
-          $html_body.= '<h2>Qualifications/Accreditation</h2>';
+          $html_body.= '<h2>QUALIFICATIONS/ACCREDITATION</h2>';
   
           foreach ($data['education'] as $educ) {
             $html_body.='<p><strong>School Name: </strong>'.$educ['school_name'].'</p>';
@@ -156,20 +158,37 @@ class FCPDF {
   
           }
         }
-  
-        if ( isset($data['job_experience']) )
-        {
-          $html_body.= '<h2>Career History</h2>';
-          foreach ($data['job_experience'] as $job_exp) {
-            $html_body.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
-            $html_body.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
-            $html_body.='<p><strong>Start/End Date: </strong>'.$job_exp['date'].'</p>';
-  
-            if ( !empty($educ['notes']) ) {
-              $html_body.='<p><strong>Notes: </strong>'.$job_exp['notes'].'</p>';
+
+        if ( isset($data['candidate_skills']) ) {
+          $html_body.= '<h2>SKILLS:</h2>';
+          $html_body.='<ul class="skills">';
+          $skills = $data['candidate_skills'];
+          $string = explode(',', $skills);
+
+          foreach ($string as $str) 
+            $html_body.= "<li>".$str."</li>";
+
+          $html_body.='</ul>';
+        }
+
+        if (isset($data['links']) || isset($data['candidate_video']) ) {
+
+          $html_body.= '<h2>SOCIAL:</h2>';
+          $html_body.='<ul class="social">';
+
+          if ( isset($data['links']) ) {
+           
+            foreach ($data['links'] as $link) {
+                $html_body.='<li class="'.$link['link_name'].'">'.$link['link_url'].'</li>';
             }
-  
           }
+
+          if ( !empty($data['candidate_video']) ) {
+            $html_body.= '<li>'.$data['candidate_video'].'</li>';
+          }                
+
+          $html_body.='</ul>';
+
         }
 
         $html_body.='</div>';
