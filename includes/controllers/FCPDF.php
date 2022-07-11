@@ -14,9 +14,14 @@ class FCPDF {
 
     public function create_pdf() {
 
+      $candidate_name = sanitize_post($_POST['candidate_name']);
+      $name = split_name($candidate_name);
+
+
       $data = [
         'resume_id'         => sanitize_post($_POST['resume_id']),
-        'candidate_name'    => sanitize_post($_POST['candidate_name']),
+        'first_name'        => isset($name[0]) ? strtoupper($name[0]) : '',
+        'last_name'         => isset($name[1]) ? strtoupper($name[1]) : '',
         'candidate_email'   => sanitize_post($_POST['candidate_email']),
         'candidate_title'   => sanitize_post($_POST['candidate_title']),
         'candidate_location'=> sanitize_post($_POST['candidate_location']),
@@ -83,9 +88,11 @@ class FCPDF {
       $html_header.='<tr>';
       
       $html_header .= '<td width="65%;">
-                        <h1 class="candidate-name">'.$data['candidate_name'].'</h1>
-                        <hr style="border: 1px solid #000;" /> 
-                        <p>'.$data['candidate_title'].'</p>
+                        <h1 class="candidate-name">
+                        <span class="c-first-name">'.$data['first_name'].'</span><br>
+                        <span class="c-last-name">'.$data['last_name'].'</span></h1>
+                        <hr style=" height: 1px; background-color: #000;border: none;" /> 
+                        <p>'.strtoupper($data['candidate_title']).'</p>
                       </td>';
       $html_header .= '<td><img src="'.$data['candidate_photo'].'"/><td>';
       $html_header.='</tr>';
@@ -99,31 +106,33 @@ class FCPDF {
         $html_body.='<div class="left-content">';
           $html_body.= '<div class="row l-container-header">
 
-            <div class="column left">
-              <h4>E-mail</h4>
-              <p>'.$data['candidate_email'].'</p>
-            </div>
+              <div class="column left">
+                <h4>E-mail</h4>
+                <p>'.$data['candidate_email'].'</p>
+              </div>
 
-            <div class="column middle">
-              <h4>Location</h4>
-              <p>'.$data['candidate_location'].'</p>
-            </div>';
+              <div class="column middle">
+                <h4>Location</h4>
+                <p>'.$data['candidate_location'].'</p>
+              </div>';
 
-            if ( !empty($data['rate_min']) ) {
-              $html_body.='<div class="column right">
-                  <h4>Minimum rate/h (£)</h4>
-                  <p>'.$data['rate_min'].'</p>
-                </div>';
-            }
+              if ( !empty($data['rate_min']) ) {
+                $html_body.='<div class="column right">
+                    <h4 style="white-space: nowrap;">Minimum rate/h (£)</h4>
+                    <p>'.$data['rate_min'].'</p>
+                  </div>';
+              }
 
-        $html_body.='</div>';
+          $html_body.='</div>'; // end tag l-container-header
+
+          $html_body.='<div class="left-content-body">';
 
           $html_body.='<p>'.$data['candidate_about'].'</p>'; 
 
           if ( isset($data['job_experience']) )
           {
-            $html_body.='<div style="width:100%">';
-            $html_body.= '<h2>Career History</h2>';
+            $html_body.='<div class="career-history" style="width:100%">';
+            $html_body.= '<h2>CAREER HISTORY</h2>';
             foreach ($data['job_experience'] as $job_exp) {
               $html_body.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
               $html_body.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
@@ -138,6 +147,8 @@ class FCPDF {
             $html_body.='</div>';
           }
 
+          $html_body.='</div>';
+
          $html_body.='</div>';
 
         $html_body.='<div class="right-content">';
@@ -145,18 +156,23 @@ class FCPDF {
         if ( isset($data['education']) )
         {
   
-          $html_body.= '<h2>QUALIFICATIONS/ACCREDITATION</h2>';
-  
+          $html_body.= '<h2 style="padding-top:10px">QUALIFICATIONS/<br />ACCREDITATION</h2>';
+
+          $html_body.='<div class="education">';
+
           foreach ($data['education'] as $educ) {
-            $html_body.='<p><strong>School Name: </strong>'.$educ['school_name'].'</p>';
-            $html_body.='<p><strong>Qualification: </strong>'.$educ['qualification'].'</p>';
-            $html_body.='<p><strong>Start/End Date: </strong>'.$educ['date'].'</p>';
+            $html_body.='<p>School Name:'.$educ['school_name'].'</p>';
+            $html_body.='<p>Qualification:'.$educ['qualification'].'</p>';
+            $html_body.='<p>Start/End Date:'.$educ['date'].'</p>';
   
             if ( !empty($educ['notes']) ) {
-              $html_body.='<p><strong>Notes: </strong>'.$educ['notes'].'</p>';
+              $html_body.='<p>Notes: '.$educ['notes'].'</p>';
             }
   
           }
+
+          $html_body.='</div>';
+
         }
 
         if ( isset($data['candidate_skills']) ) {

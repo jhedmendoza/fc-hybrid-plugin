@@ -23,6 +23,13 @@ function hybrid_include( $filename = '', $attributes='') {
 	}
 }
 
+function split_name($name) {
+    $name = trim($name);
+    $last_name = (strpos($name, ' ') === false) ? '' : preg_replace('#.*\s([\w-]*)$#', '$1', $name);
+    $first_name = trim( preg_replace('#'.preg_quote($last_name,'#').'#', '', $name ) );
+    return array($first_name, $last_name);
+}
+
 function printr($data) {
 	echo '<pre>';
 		print_r($data);
