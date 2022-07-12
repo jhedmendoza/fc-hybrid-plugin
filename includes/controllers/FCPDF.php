@@ -262,9 +262,6 @@ class FCPDF {
       $mpdf->WriteHTML($styles, 1);
       $mpdf->WriteHTML($html_body, 2);
 
-      $mpdf->Output();
-      exit;
-
       $upload = wp_upload_dir();
       $upload_dir = $upload['basedir'];
       $upload_dir = $upload_dir . '/fc_hybrid_plugin';
