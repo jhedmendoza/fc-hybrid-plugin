@@ -76,21 +76,42 @@ class FCPDF {
     }
 
     public function build_pdf($data) {
+   
+      $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+      $fontDirs = $defaultConfig['fontDir'];
+      
+      $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+      $fontData = $defaultFontConfig['fontdata'];
 
       $mpdf = new Mpdf([
+        'fontDir' => array_merge($fontDirs, [
+          __DIR__ . '/fonts',
+        ]),
+        'fontdata' => $fontData + [
+          'vanguard' => [
+              'R' => 'vanguard-cf-regular.ttf',
+          ],
+          'vanguard-thin' => [
+              'R' => 'vanguard-cf-thin.ttf',
+          ],
+          'vanguard-medium' => [
+              'R' => 'vanguard-cf-medium.ttf',
+          ]
+      ],
         'margin_left'  => 0,
         'margin_right' => 0,
         'margin_top'=> 0,
         'margin_bottom' => 0,
         'default_font' => 'Arial'
       ]);
-      $html_header.='<table class="document-header" style="margin-left:40px">';
+
+      $html_header.='<table class="document-header" style="margin-left:40px;">';
       $html_header.='<tr>';
       
       $html_header .= '<td width="65%;">
-                        <h1 class="candidate-name">
-                        <span class="c-first-name">'.$data['first_name'].'</span><br>
-                        <span class="c-last-name">'.$data['last_name'].'</span></h1>
+                        <h1 class="candidate-name" style="font-size:60px;margin:0;padding:0;line-height:0">
+                        <span style="line-height:0" class="c-first-name" style="font-family:vanguard-thin;">'.$data['first_name'].'</span><br />
+                        <span style="line-height:0" class="c-last-name" style="font-family:vanguard">'.$data['last_name'].'</span></h1>
                         <hr style=" height: 1px; background-color: #000;border: none;" /> 
                         <p>'.strtoupper($data['candidate_title']).'</p>
                       </td>';
@@ -127,20 +148,24 @@ class FCPDF {
 
           $html_body.='<div class="left-content-body">';
 
+          $html_body.= '<h2>ABOUT ME</h2>';
           $html_body.='<p>'.$data['candidate_about'].'</p>'; 
 
           if ( isset($data['job_experience']) )
           {
-            $html_body.='<div class="career-history" style="width:100%">';
+            $html_body.='<div class="career-history" style="width:100%;">';
             $html_body.= '<h2>CAREER HISTORY</h2>';
             foreach ($data['job_experience'] as $job_exp) {
-              $html_body.='<p><strong>Employer: </strong>'.$job_exp['employer'].'</p>';
-              $html_body.='<p><strong>Job Title: </strong>'.$job_exp['job_title'].'</p>';
-              $html_body.='<p><strong>Start/End Date: </strong>'.$job_exp['date'].'</p>';
+              $html_body.='<div style="padding-bottom:20px">';
+              $html_body.='<p>Employer: '.$job_exp['employer'].'</p>';
+              $html_body.='<p>Job Title: '.$job_exp['job_title'].'</p>';
+              $html_body.='<p>Start/End Date: '.$job_exp['date'].'</p>';
     
               if ( !empty($educ['notes']) ) {
-                $html_body.='<p><strong>Notes: </strong>'.$job_exp['notes'].'</p>';
+                $html_body.='<p>Notes: '.$job_exp['notes'].'</p>';
               }
+
+              $html_body.='</div>';
     
             }
 
@@ -182,7 +207,7 @@ class FCPDF {
           $string = explode(',', $skills);
 
           foreach ($string as $str) 
-            $html_body.= "<li>".$str."</li>";
+            $html_body.= "<li><img width='15' src=".HYBRID_DIR_URL.'/assets/images/arrow.png'." />&nbsp;&nbsp;&nbsp;".$str."</li>";
 
           $html_body.='</ul>';
         }
@@ -195,12 +220,32 @@ class FCPDF {
           if ( isset($data['links']) ) {
            
             foreach ($data['links'] as $link) {
-                $html_body.='<li class="'.$link['link_name'].'">'.$link['link_url'].'</li>';
+
+              $img_width = '15';
+              
+              $link_name = isset($link['link_name']) ? strtolower($link['link_name']) : '';
+             
+              if ( isset($link['link_url'])) {
+                $link_url = explode('//',$link['link_url']);
+              }
+
+              if ($link_name == 'linkedin') 
+                $img_width = '20';
+              
+              $html_body.='<li>';
+
+              $html_body.='<img width="'.$img_width.'" src='.HYBRID_DIR_URL.'/assets/images/'.$link_name.'.png'.' />&nbsp;&nbsp;&nbsp;';
+
+              $html_body.= $link_url[1].'</li>';
             }
           }
 
+
           if ( !empty($data['candidate_video']) ) {
-            $html_body.= '<li>'.$data['candidate_video'].'</li>';
+
+              $video = explode('//',$data['candidate_video']);
+          
+            $html_body.= '<li><img style="margin-left:-10px" width="40" src='.HYBRID_DIR_URL.'/assets/images/video.png'.' />'.$video[1].'</li>';
           }                
 
           $html_body.='</ul>';
@@ -210,6 +255,8 @@ class FCPDF {
         $html_body.='</div>';
 
       $html_body.='</div>';
+
+      $mpdf->SetHTMLFooter("<img width='160' style='margin-left:550px;margin-bottom:50px' src=".HYBRID_DIR_URL.'/assets/images/pdf-logo.png'." />");
 
       $styles = file_get_contents(HYBRID_DIR_URL . 'assets/css/pdf-layout.css');
       $mpdf->WriteHTML($styles, 1);
