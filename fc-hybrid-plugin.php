@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: FC Hybrid Custom Plugin
-Description: This plugin is used for generating pdf using user's CV details.
+Description: This plugin is used for adding form fields, payment gateway integration and CV generation.
 Version: 1.0
 Author: Hybrid Anchor
 Author URI: https://www.hybridanchor.com/
