@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: FC Hybrid Custom Plugin
-Description: This plugin is used for adding form fields, payment gateway integration and CV generation.
+Description: This plugin is used for handling and extending wp job manager form fields, payment gateway integration and CV generation etc.
 Version: 1.0
 Author: Hybrid Anchor
 Author URI: https://www.hybridanchor.com/
@@ -18,7 +18,9 @@ class Hybrid {
 	var $version = '1';
 
 
-	function __construct() {}
+	function __construct() {
+		register_activation_hook(__FILE__, array($this, 'hybrid_install') );
+	}
 
 	function initialize() {
 		
@@ -63,6 +65,37 @@ class Hybrid {
 			define( $name, $value );
 		}
 	}
+
+}
+
+function hybrid_install() {
+	global $wpdb;
+	$table_membership_level = $wpdb->prefix . '_membership_level';
+	$charset_collate = $wpdb->get_charset_collate();
+
+	$sql = [];
+
+	$sql[] = "CREATE TABLE $table_membership_level (
+					id INT (11) AUTO_INCREMENT,
+					name VARCHAR(100),
+					code VARCHAR(100)
+					PRIMARY KEY (id)
+				) $charset_collate";
+
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql) ;
+
+	// $membership_level_data = include 'includes/config/database/membership_level.php';
+	
+	// foreach ($membership_level_data as $level) {
+	// 	$wpdb->insert($table_membership_level, array(
+	// 		'name'  => $level['name'],
+	// 		'code'  => $level['code'],
+	// 	));
+	// }
+
+	add_option('hybrid_db_version', HYBRID_VERSION);
 
 }
 
