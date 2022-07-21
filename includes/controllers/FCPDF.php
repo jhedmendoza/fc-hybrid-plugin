@@ -14,30 +14,30 @@ class FCPDF {
 
     public function create_pdf() {
 
-      $candidate_name = sanitize_post($_POST['candidate_name']);
+      $candidate_name = sanitize_text_field($_POST['candidate_name']);
       $name = split_name($candidate_name);
 
 
       $data = [
-        'resume_id'         => sanitize_post($_POST['resume_id']),
+        'resume_id'         => sanitize_text_field($_POST['resume_id']),
         'first_name'        => isset($name[0]) ? strtoupper($name[0]) : '',
         'last_name'         => isset($name[1]) ? strtoupper($name[1]) : '',
-        'candidate_email'   => sanitize_post($_POST['candidate_email']),
-        'candidate_title'   => sanitize_post($_POST['candidate_title']),
-        'candidate_location'=> sanitize_post($_POST['candidate_location']),
-        'candidate_photo'   => sanitize_post($_POST['current_candidate_photo']),
-        'candidate_skills'  => sanitize_post($_POST['resume_skills']),
-        'candidate_video'   => sanitize_post($_POST['candidate_video']),
-        'rate_min'          => sanitize_post($_POST['rate_min']),
-        'candidate_about'   => sanitize_post($_POST['resume_content']),
+        'candidate_email'   => sanitize_text_field($_POST['candidate_email']),
+        'candidate_title'   => sanitize_text_field($_POST['candidate_title']),
+        'candidate_location'=> sanitize_text_field($_POST['candidate_location']),
+        'candidate_photo'   => sanitize_text_field($_POST['current_candidate_photo']),
+        'candidate_skills'  => sanitize_text_field($_POST['resume_skills']),
+        'candidate_video'   => sanitize_text_field($_POST['candidate_video']),
+        'rate_min'          => sanitize_text_field($_POST['rate_min']),
+        'candidate_about'   => sanitize_text_field($_POST['resume_content']),
       ];
 
       if ( isset($_POST['repeated-row-links']) )
       {
           foreach($_POST['repeated-row-links'] as $link_key) {
             $links[] = array(
-              'link_name' => sanitize_post($_POST['links_name_'.$link_key]),
-              'link_url'  => sanitize_post($_POST['links_url_'.$link_key])
+              'link_name' => sanitize_text_field($_POST['links_name_'.$link_key]),
+              'link_url'  => sanitize_text_field($_POST['links_url_'.$link_key])
             );
           }
           $data['links'] = $links;
@@ -47,10 +47,10 @@ class FCPDF {
       {
           foreach($_POST['repeated-row-candidate_education'] as $education_key) {
             $education[] = array(
-              'school_name'  => sanitize_post($_POST['candidate_education_location_'.$education_key]),
-              'qualification'=> sanitize_post($_POST['candidate_education_qualification_'.$education_key]),
-              'date'         => sanitize_post($_POST['candidate_education_date_'.$education_key]),
-              'notes'        => sanitize_post($_POST['candidate_education_notes_'.$education_key])
+              'school_name'  => sanitize_text_field($_POST['candidate_education_location_'.$education_key]),
+              'qualification'=> sanitize_text_field($_POST['candidate_education_qualification_'.$education_key]),
+              'date'         => sanitize_text_field($_POST['candidate_education_date_'.$education_key]),
+              'notes'        => sanitize_text_field($_POST['candidate_education_notes_'.$education_key])
             );
           }
           $data['education'] = $education;
@@ -60,10 +60,10 @@ class FCPDF {
       {
           foreach($_POST['repeated-row-candidate_experience'] as $link_key) {
             $job_experience[] = array(
-              'employer'  => sanitize_post($_POST['candidate_experience_employer_'.$link_key]),
-              'job_title' => sanitize_post($_POST['candidate_experience_job_title_'.$link_key]),
-              'date'      => sanitize_post($_POST['candidate_experience_date_'.$link_key]),
-              'notes'     => sanitize_post($_POST['candidate_experience_notes_'.$link_key]),
+              'employer'  => sanitize_text_field($_POST['candidate_experience_employer_'.$link_key]),
+              'job_title' => sanitize_text_field($_POST['candidate_experience_job_title_'.$link_key]),
+              'date'      => sanitize_text_field($_POST['candidate_experience_date_'.$link_key]),
+              'notes'     => sanitize_text_field($_POST['candidate_experience_notes_'.$link_key]),
             );
           }
           $data['job_experience'] = $job_experience;

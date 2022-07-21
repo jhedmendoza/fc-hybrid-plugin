@@ -19,7 +19,7 @@ class Hybrid {
 
 
 	function __construct() {
-		register_activation_hook(__FILE__, array($this, 'hybrid_install') );
+		register_activation_hook( __FILE__  , array($this, 'hybrid_install') );
 	}
 
 	function initialize() {
@@ -53,6 +53,7 @@ class Hybrid {
 
 		//Include controllers.
     	require_once(HYBRID_PATH.'includes/controllers/FCPDF.php');
+		require_once(HYBRID_PATH.'includes/controllers/Users.php');
 
 		//Include core.
 		hybrid_include('includes/hybrid-assets.php');
@@ -65,37 +66,41 @@ class Hybrid {
 			define( $name, $value );
 		}
 	}
-
-}
-
-function hybrid_install() {
-	global $wpdb;
-	$table_membership_level = $wpdb->prefix . '_membership_level';
-	$charset_collate = $wpdb->get_charset_collate();
-
-	$sql = [];
-
-	$sql[] = "CREATE TABLE $table_membership_level (
-					id INT (11) AUTO_INCREMENT,
-					name VARCHAR(100),
-					code VARCHAR(100)
-					PRIMARY KEY (id)
-				) $charset_collate";
-
-
-	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	dbDelta($sql) ;
-
-	// $membership_level_data = include 'includes/config/database/membership_level.php';
 	
-	// foreach ($membership_level_data as $level) {
-	// 	$wpdb->insert($table_membership_level, array(
-	// 		'name'  => $level['name'],
-	// 		'code'  => $level['code'],
-	// 	));
-	// }
 
-	add_option('hybrid_db_version', HYBRID_VERSION);
+	function hybrid_install() {
+
+		global $wpdb;
+		$table_membership_level = $wpdb->prefix . 'membership_level';
+		$charset_collate = $wpdb->get_charset_collate();
+	
+		$sql[] = "CREATE TABLE $table_membership_level (
+						id INT (11) AUTO_INCREMENT,
+						membership_name VARCHAR(100),
+						membership_code VARCHAR(100),
+						PRIMARY KEY (id)
+					) $charset_collate";
+	
+	
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta($sql) ;
+	
+		$membership_level_data = include 'includes/config/database/membership_level.php';
+
+		$check_membership_level = $wpdb->get_var( "SELECT COUNT(*) FROM $table_membership_level" );
+
+		if ($check_membership_level > 0)
+			return false;
+		
+		foreach ($membership_level_data as $level) {
+			$wpdb->insert($table_membership_level, array(
+				'membership_name'  => $level['name'],
+				'membership_code'  => $level['code'],
+			));
+		}
+	
+		add_option('hybrid_db_version', HYBRID_VERSION);
+	}
 
 }
 
