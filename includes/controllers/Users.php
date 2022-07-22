@@ -1,14 +1,11 @@
 <?php
-if (!defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
+if (!defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Users {
 
     public function __construct() {
       add_action('wp_ajax_create_candidate_account', [$this, 'create_candidate_account'] );
       add_action('wp_ajax_nopriv_create_candidate_account', [$this, 'create_candidate_account'] );
-
     }
 
     public function create_candidate_account() 
@@ -24,7 +21,7 @@ class Users {
       $error = $this->validate_fields($firstname, $lastname, $username, $email, $password);
 
       if ($error['count'] > 0) {
-        wp_json_encode(['status' => false, 'msg' => 'There are error(s) in the fields', 'errors' => $errors]);
+        echo wp_json_encode(['status' => true, 'msg' => 'There are error(s) in the fields', 'errors' => $error]);
         exit;
       }
      
@@ -36,32 +33,32 @@ class Users {
           $user = new WP_User($user_id);
           $user->set_role('candidate');
 
+          //attach membership level on candidate depending on chosen package
           add_user_meta( $user_id, 'fc_membership_level', $membership[1]);
 
-          echo wp_json_encode(['status' => true, 'msg' => 'Account creation successful']);
-          exit;
-      } else {
-          echo wp_json_encode(['status' => false, 'msg' => 'Something went wrong. Try again later.']);
-          exit;
-      }
-      
+          echo wp_json_encode(['status' => true, 'msg' => 'Account creation successful', 'errors' => 0]);
+      } 
+      else 
+        echo wp_json_encode(['status' => false, 'msg' => 'Something went wrong. Try again later.']);
+
+      exit;
     }
 
     public function validate_fields($firstname, $lastname, $username, $email, $password) {
       $errors = [];
       $counter = 0;
       if ( empty($firstname) )  {
-        $errors['firstname']['required'] = 'First name is a required field.';
+        $errors['firstname']['required'] = 'First name is required.';
         $counter++;
       }
         
       if ( empty($lastname) )  {
-        $errors['lastname']['required'] = 'Last name is a required field.';
+        $errors['lastname']['required'] = 'Last name is required.';
         $counter++;
       }
     
       if ( empty($username) ) {
-        $errors['username']['required'] = 'Username is a required field.';
+        $errors['username']['required'] = 'Username is required.';
         $counter++;
       }
       else if ( username_exists($username) ) {
@@ -70,7 +67,7 @@ class Users {
       }
         
       if ( empty($email) )  {
-        $errors['email']['required'] = 'Email is a required field.';
+        $errors['email']['required'] = 'Email is required.';
         $counter++;
       }
       else if ( !is_email($email) )  {
@@ -83,7 +80,7 @@ class Users {
       }
 
       if ( empty($password) )  {
-        $errors['password']['required'] = 'Password is a required field.';
+        $errors['password']['required'] = 'Password is required.';
         $counter++;
       }
 
@@ -91,10 +88,7 @@ class Users {
 
       return $errors;
       
-    }
-
-
-    
+    }    
 }
 
 $users = new Users();
