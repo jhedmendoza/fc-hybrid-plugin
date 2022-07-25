@@ -28,6 +28,8 @@
         'membership_level' : membershipLevel
       };
 
+      console.log(data);
+
       //reset error when form submitted again.
       $('._error').remove();
 
@@ -44,8 +46,6 @@
           _that.css('pointer-events', 'all');
           $('.preloader').remove();
          packageBtn.show();
-        
-
         },
         success: function(result) {
           var resp = JSON.parse(result);
@@ -53,8 +53,14 @@
           if (resp.status) {
 
             if (resp.errors == 0) {
-              alert("You have successfully subscribe to our site.");
-              location.replace(siteurl+'/my-profile');
+
+              if (resp.checkout) 
+                location.replace(siteurl+'/checkout?user_type=candidate');
+              else {
+                alert("You have successfully subscribe to our site.");
+                location.replace(siteurl+'/my-profile');
+              }  
+            
             }
             else {
               $.each(resp.errors, function(ele, val) {
