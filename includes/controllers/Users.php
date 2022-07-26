@@ -4,6 +4,9 @@ if (!defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Users {
 
     public function __construct() {
+
+      session_start();
+
       add_action('template_redirect', [$this, 'candidate_checkout_details']);
       add_action('wp_ajax_create_candidate_account', [$this, 'create_candidate_account'] );
       add_action('wp_ajax_nopriv_create_candidate_account', [$this, 'create_candidate_account'] );
@@ -11,15 +14,26 @@ class Users {
     }
 
     public function candidate_checkout_details() {
-
-      session_start();
-
-      if ( is_checkout() ) {
-      }
-
+      
       if ( is_wc_endpoint_url( 'order-received' ) ) {
         global $wp;
+
         $order_id = intval( str_replace( 'checkout/order-received/', '', $wp->request ) );
+
+        if ($order_id) 
+        {
+          $user_query = new WP_User_Query( [
+            'search' => '*'.$_SESSION['username'].'*',
+            'search_columns' => array('user_login'),
+          ]);
+         
+          $user_id = $user_query->get_results()[0]->data->ID;
+
+          //update role to candidate
+          $user = new WP_User($user_id);
+          $user->set_role('candidate');
+        }
+
       }
 
     }
@@ -163,10 +177,14 @@ class Users {
         $fields['billing']['billing_last_name']['default'] = $_SESSION['lastname'];
       }
 
-
       if ( !is_null($_SESSION['email']) ) {
         $fields['billing']['billing_email']['default'] = $_SESSION['email'];
       }
+
+      if ( !is_null($_SESSION['email']) ) {
+        $fields['account']['account_username']['default'] = $_SESSION['username'];
+      }
+
       return $fields;
     }
   
