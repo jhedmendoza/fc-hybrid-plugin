@@ -14,8 +14,8 @@ class Users {
     }
 
     public function candidate_checkout_details() {
-      
-      if ( is_wc_endpoint_url( 'order-received' ) ) {
+
+      if ( is_wc_endpoint_url('order-received') ) {
         global $wp;
 
         $order_id = intval( str_replace( 'checkout/order-received/', '', $wp->request ) );
