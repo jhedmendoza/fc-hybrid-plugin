@@ -3,6 +3,9 @@
   var xhr;
 
   function init() {
+
+    $('.my-profile .notice').html('<p>For security, your password should consist of at least 12 random characters.</p>').show();
+
     $('.candidate-sign-up a.elementor-button').on('click', function(e) {
       e.preventDefault();
 
