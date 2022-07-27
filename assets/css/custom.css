@@ -1,2 +1,2 @@
 ._error {font-size: 12px;}
-.my-profile .notice {display:none}
+.my-profile .notice, .dashboard-content #titlebar h1 {display:none}

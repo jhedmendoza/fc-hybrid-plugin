@@ -4,7 +4,8 @@
 
   function init() {
 
-    $('.my-profile .notice').html('<p>For security, your password should consist of at least 12 random characters.</p>').show();
+    overrideLabels();
+
 
     $('.candidate-sign-up a.elementor-button').on('click', function(e) {
       e.preventDefault();
@@ -93,6 +94,15 @@
       });
 
     });
+  }
+
+  function overrideLabels() {
+    $('.my-profile .notice').html('<p>For security, your password should consist of at least 12 random characters.</p>').show();
+    $('.fieldset-resume_content label').text('CV Content');
+    $('.fieldset-resume_category label').text('CV category');
+    $('label[for="resume_file"]').html('CV file <small>(optional)</small>');
+    $('.fieldset-resume_file .field .description').text('Optionally upload your CV for employers to view. Max. file size: 200 MB.');
+    $('.dashboard-content #titlebar h1').text('Submit CV').show();
   }
 
 
