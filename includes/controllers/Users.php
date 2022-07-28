@@ -7,13 +7,18 @@ class Users {
 
       session_start();
 
-      add_action('template_redirect', [$this, 'candidate_checkout_details']);
-      add_action('wp_ajax_create_candidate_account', [$this, 'create_candidate_account'] );
-      add_action('wp_ajax_nopriv_create_candidate_account', [$this, 'create_candidate_account'] );
+      add_action('template_redirect', [$this, 'user_checkout_details']);
+
+      add_action('wp_ajax_create_candidate_account', [$this, 'create_candidate_account']);
+      add_action('wp_ajax_nopriv_create_candidate_account', [$this, 'create_candidate_account']);
+
+      add_action('wp_ajax_create_recruiter_package', [$this, 'create_recruiter_package']);
+      add_action('wp_ajax_nopriv_create_recruiter_package', [$this, 'create_recruiter_package']);
+
       add_filter( 'woocommerce_checkout_fields', [$this, 'prefilled_checkout_form'] );
     }
 
-    public function candidate_checkout_details() {
+    public function user_checkout_details() {
 
       if ( is_wc_endpoint_url('order-received') ) {
         global $wp;
@@ -25,20 +30,30 @@ class Users {
           $user_query = new WP_User_Query( [
             'search' => '*'.$_SESSION['username'].'*',
             'search_columns' => array('user_login'),
-          ]);
-         
-          $user_id = $user_query->get_results()[0]->data->ID;
+          ]);     
 
+          $user_id = $user_query->get_results()[0]->data->ID;
+          $userdata = get_userdata($user_id);
+          $user_roles = $userdata->roles;
+
+         if ( in_array('administrator', $user_roles, true) || in_array('employer', $user_roles, true) ) {
+
+          if ( !metadata_exists('user', $user_id, 'fc_membership_level') ) 
+            add_user_meta($user_id, 'fc_membership_level', $_SESSION['package_type']);
+            wp_redirect(site_url().'/post-a-job/');
+            exit;
+         }
+         else {
           //update role to candidate
           $user = new WP_User($user_id);
           $user->set_role('candidate');
+         }
+
         }
-
       }
-
     }
 
-    public function add_to_cart_candidate_package($membership_type) {
+    public function add_to_cart_package($membership_type, $user_type) {
       global $woocommerce;
 
       $product_id = 0;
@@ -47,7 +62,7 @@ class Users {
       $woocommerce->cart->empty_cart();
 
       $args = array(
-        'category' => array('candidate'),
+        'category' => array($user_type), //candidate or recruiter
       );
 
       $products = wc_get_products($args);
@@ -60,6 +75,8 @@ class Users {
       }
 
       $woocommerce->cart->add_to_cart($product_id);
+
+      $_SESSION['package_type'] = $membership_type;
 
       echo wp_json_encode([
         'status'  => true,
@@ -100,7 +117,7 @@ class Users {
         $_SESSION['email']    = $email;
         $_SESSION['password'] = $password;
         //add premium package to cart and redirect them to checkout page
-        $this->add_to_cart_candidate_package($membership_type);
+        $this->add_to_cart_package($membership_type, 'candidate');
       }
 
       if ( !is_wp_error($user_id) ) {
@@ -186,6 +203,14 @@ class Users {
       }
 
       return $fields;
+    }
+
+
+    public function create_recruiter_package() {
+      $recruiter_package = sanitize_text_field($_POST['recruiter_package']);
+      $package = explode('-', $recruiter_package);
+      $package_type = isset($package[1]) ? $package[1] : '';
+      $this->add_to_cart_package($package_type, 'recruiter');
     }
   
 }

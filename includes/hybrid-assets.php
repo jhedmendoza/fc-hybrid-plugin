@@ -24,3 +24,6 @@ function js_inline_script() {
 </script>
 <?php
 }
+
+
+

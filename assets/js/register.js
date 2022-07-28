@@ -17,9 +17,7 @@
       var password  = $('#signup-password').val().trim();
 
       var _that = $('.candidate-sign-up a.elementor-button');
-
       var membershipLevel = $(this).parents('.candidate-sign-up').attr('id');
-
       var packageBtn = $('#'+membershipLevel+ ' a.elementor-button');
 
       var data = {
@@ -94,6 +92,46 @@
       });
 
     });
+
+
+    $('.recruiter-purchase-package a.elementor-button').on('click', function(e) {
+      e.preventDefault();
+
+      var packageLevel = $(this).parents('.recruiter-purchase-package').attr('id');
+      var packageBtn = $('#'+packageLevel+ ' a.elementor-button');
+      var _that = $('.recruiter-purchase-package a.elementor-button');
+
+      var data = {
+        'action'            : 'create_recruiter_package',
+        'recruiter_package' : packageLevel
+      };
+
+      xhr = $.ajax({
+        url    : fc_ajax_url,
+        data   : data,
+        method : 'POST',
+        beforeSend: function() {
+          _that.css('pointer-events', 'none');
+          packageBtn.after('<p class="preloader">Processing. Please wait.</p>');
+          packageBtn.hide();
+        },
+        complete: function() {
+          _that.css('pointer-events', 'all');
+          $('.preloader').remove();
+         packageBtn.show();
+        },
+        success: function(result) {
+          var resp = JSON.parse(result);
+
+          if (resp.status) {
+            if (resp.checkout) 
+              location.replace(siteurl+'/checkout?user_type=recruiter');
+          }
+        },
+      });
+
+    });
+
   }
 
   function overrideLabels() {
