@@ -27,28 +27,33 @@ class Users {
 
         if ($order_id) 
         {
-          $user_query = new WP_User_Query( [
-            'search' => '*'.$_SESSION['username'].'*',
-            'search_columns' => array('user_login'),
-          ]);     
 
-          $user_id = $user_query->get_results()[0]->data->ID;
-          $userdata = get_userdata($user_id);
-          $user_roles = $userdata->roles;
+          if ( is_user_logged_in() ) 
+          {
+            $current_user = wp_get_current_user();
+            $user_id = $current_user->ID;
+            $user_roles = $current_user->roles;
 
-         if ( in_array('administrator', $user_roles, true) || in_array('employer', $user_roles, true) ) {
+            if ( in_array('administrator', $user_roles, true) || in_array('employer', $user_roles, true) ) {
+              
+              if ( !metadata_exists('user', $user_id, 'fc_membership_level') )  
+                add_user_meta($user_id, 'fc_membership_level', $_SESSION['package_type']);
 
-          if ( !metadata_exists('user', $user_id, 'fc_membership_level') ) 
-            add_user_meta($user_id, 'fc_membership_level', $_SESSION['package_type']);
-            wp_redirect(site_url().'/post-a-job/');
-            exit;
-         }
-         else {
-          //update role to candidate
-          $user = new WP_User($user_id);
-          $user->set_role('candidate');
-         }
+              wp_redirect(site_url().'/post-a-job/');
+              exit;
+              
+             }
+          }
+          else {
+            $user_query = new WP_User_Query( [
+              'search' => '*'.$_SESSION['username'].'*',
+              'search_columns' => array('user_login'),
+            ]);     
 
+            //update role to candidate
+            $user = new WP_User($user_id);
+            $user->set_role('candidate');
+          }
         }
       }
     }
