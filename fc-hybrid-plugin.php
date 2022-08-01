@@ -57,6 +57,8 @@ class Hybrid {
 
 		//Include core.
 		hybrid_include('includes/hybrid-assets.php');
+
+		hybrid_include('includes/admin/initialize-admin.php');
  	}
 
 
@@ -72,15 +74,28 @@ class Hybrid {
 
 		global $wpdb;
 		$table_membership_level = $wpdb->prefix . 'membership_level';
+		$table_logo_manager = $wpdb->prefix . 'logo_manager';
+
+
 		$charset_collate = $wpdb->get_charset_collate();
 	
 		$sql[] = "CREATE TABLE $table_membership_level (
-						id INT (11) AUTO_INCREMENT,
-						membership_name VARCHAR(100),
-						membership_code VARCHAR(100),
-						PRIMARY KEY (id)
-					) $charset_collate";
-	
+			id INT (11) AUTO_INCREMENT,
+			membership_name VARCHAR(100),
+			membership_code VARCHAR(100),
+			PRIMARY KEY (id)
+		) $charset_collate";
+
+
+		$sql[] = "CREATE TABLE $table_logo_manager (
+			id INT (11) AUTO_INCREMENT,
+			entry_type INT (5),
+			club_name VARCHAR (255),
+			type_of_sport INT (5),
+			level INT (5),
+			logo_url TEXT,
+			PRIMARY KEY (id)
+		) $charset_collate";
 	
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta($sql) ;

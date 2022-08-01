@@ -48,7 +48,9 @@ class Users {
             $user_query = new WP_User_Query( [
               'search' => '*'.$_SESSION['username'].'*',
               'search_columns' => array('user_login'),
-            ]);     
+            ]);
+
+		        $user_id = $user_query->get_results()[0]->data->ID;     
 
             //update role to candidate
             $user = new WP_User($user_id);
