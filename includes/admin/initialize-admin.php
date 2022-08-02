@@ -8,7 +8,7 @@ function initialize_fc_logo_manager_menus() {
   $title = 'Logo Manager';
   $slug  = 'logo-manager';
   $icon  = 'dashicons-images-alt2';
-  $position = 100;
+  $position = 50;
 
   add_menu_page( $title, $title, 'manage_options', $slug, '', $icon, $position );
 
