@@ -30,6 +30,9 @@ function enqueue_admin_css_js() {
 
   $admin_version_script = '1';
 
+  //Core media script
+  wp_enqueue_media();
+
   wp_enqueue_style('bootstrap-admin', 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css', [], '5.2.0');
   wp_enqueue_style('fc-admin-page', HYBRID_DIR_URL . 'includes/admin/assets/fc-admin-logo-manager.css', [], $admin_version_script);
 

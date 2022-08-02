@@ -1,16 +1,18 @@
 <div class="wrapper">
   <div class="container mt-3">
+
+    <h3>Add Logo</h3>
+
     <div class="col">
-      <div class="card">
-        <div class="card-header">
-            <h4>Add Logo</h4>
+      <div class="card p-0 mx-auto">
+        <div class="card-header card-default-color">
+            <h5>Logo Details</h5>
         </div>
         <div class="card-body">
 
             <div class="mb-4">
-                <img src="https://via.placeholder.com/200" class="img-thumbnail" alt="">
-                <button class="btn btn-primary">Add logo</button>
-                <button class="btn btn-danger">Delete logo</button>
+                <img src="<?php echo HYBRID_DIR_URL.'includes/admin/assets/images/placeholder.png' ?>" class="img-thumbnail logo-thumbnail" width="200" alt="">
+                <button class="btn btn-primary upload-image">Add logo</button>
             </div>
 
             <div class="mb-4">
@@ -29,10 +31,12 @@
                     <label class="form-check-label" for="entry_type_organization">Organization</label>
                 </div>
             </div>
+
             <div class="mb-4">
               <label for="team_club_name" class="form-label">Team/Club Name:</label>
               <input type="text" class="form-control" name="team_club_name" id="team_club_name">
             </div>
+
             <div class="mb-4">
               <label for="type_of_sport" class="form-label">Type of Sport:</label>
               <select class="form-select form-select-lg" name="type_of_sport">
@@ -60,7 +64,7 @@
                 </div>
             </div>
 
-          <button type="submit" class="btn btn-success">Submit</button>
+          <button type="submit" class="btn btn-success btn-submit-logo">Submit</button>
         </div>
       </div>
     </div>
